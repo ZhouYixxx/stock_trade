@@ -1,0 +1,18 @@
+[monitor]
+# Interval in minutes
+interval = 10
+
+# List of stock symbols to monitor
+# Example: ["AAPL", "MSFT", "GOOGL", ...]
+stocks = [
+    "AAPL",
+    "MSFT",
+    "GOOGL",
+    "AMZN",
+    "META",
+    "TSLA",
+    "NVDA",
+    "JPM",
+    "V",
+    "JNJ"
+]
