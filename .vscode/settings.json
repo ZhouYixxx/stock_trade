@@ -1,0 +1,25 @@
+  {
+      // Python 源码路径
+      "python.analysis.extraPaths": [
+          "${workspaceFolder}/src"
+      ],
+
+      // Python 解释器（使用虚拟环境）
+      "python.defaultInterpreterPath": "${workspaceFolder}/stock_venv/Scripts/python.exe",
+
+      // 终端激活虚拟环境
+      "python.terminal.activateEnvironment": true,
+
+      // 代码格式化
+      "[python]": {
+          "editor.formatOnSave": true,
+          "editor.defaultFormatter": "ms-python.python"
+      },
+
+      // 文件排除
+      "files.exclude": {
+          "**/__pycache__": true,
+          "**/*.pyc": true,
+          "**/stock_venv": true
+      }
+  }

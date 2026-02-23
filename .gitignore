@@ -1,1 +1,5 @@
 stock_venv/
+
+CLAUDE.md
+PROJECT_DESIGN.md
+src/__pycache__

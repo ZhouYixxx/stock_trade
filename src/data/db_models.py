@@ -1,9 +1,10 @@
 """
-数据模型定义
+数据库 ORM 模型定义
+
+使用 Peewee ORM 定义数据库表结构
 """
 import peewee
 from datetime import datetime
-
 
 # 创建数据库连接
 database = peewee.SqliteDatabase(None)
@@ -16,7 +17,7 @@ class BaseModel(peewee.Model):
 
 
 class StockData(BaseModel):
-    """股票数据模型"""
+    """股票日线数据模型"""
     symbol = peewee.CharField(max_length=20)
     date = peewee.DateField()
     open = peewee.FloatField()
@@ -27,13 +28,14 @@ class StockData(BaseModel):
     created_at = peewee.DateTimeField(default=datetime.now)
 
     class Meta:
+        database = database
         indexes = (
             (('symbol', 'date'), True),  # 联合唯一索引
         )
 
 
 class SignalRecord(BaseModel):
-    """信号记录模型"""
+    """交易信号记录模型"""
     signal_id = peewee.CharField(max_length=50, primary_key=True)
     symbol = peewee.CharField(max_length=20)
     signal_type = peewee.CharField(max_length=50)
@@ -43,25 +45,31 @@ class SignalRecord(BaseModel):
     target_price = peewee.FloatField()
     risk_reward_ratio = peewee.FloatField()
     confidence = peewee.FloatField()
-    indicators = peewee.TextField()  # JSON字符串
+    indicators = peewee.TextField()  # JSON 字符串
     created_at = peewee.DateTimeField(default=datetime.now)
+
+    class Meta:
+        database = database
 
 
 class OrderRecord(BaseModel):
     """订单记录模型"""
     order_id = peewee.CharField(max_length=50, primary_key=True)
     symbol = peewee.CharField(max_length=20)
-    side = peewee.CharField(max_length=10)
-    order_type = peewee.CharField(max_length=20)
+    side = peewee.CharField(max_length=10)  # buy / sell
+    order_type = peewee.CharField(max_length=20)  # limit / market / stop_limit
     quantity = peewee.IntegerField()
     price = peewee.FloatField()
-    stop_price = peewee.FloatField(null=True)
-    status = peewee.CharField(max_length=20)
+    stop_price = peewee.FloatField(null=True)  # 止损价（可选）
+    status = peewee.CharField(max_length=20)  # pending / filled / cancelled / rejected
     created_time = peewee.DateTimeField()
     updated_time = peewee.DateTimeField()
     filled_price = peewee.FloatField(null=True)
     filled_quantity = peewee.IntegerField(default=0)
-    signal_id = peewee.CharField(max_length=50, null=True)
+    signal_id = peewee.CharField(max_length=50, null=True)  # 关联信号 ID
+
+    class Meta:
+        database = database
 
 
 class PositionRecord(BaseModel):
@@ -73,10 +81,13 @@ class PositionRecord(BaseModel):
     quantity = peewee.IntegerField()
     stop_loss = peewee.FloatField()
     target_price = peewee.FloatField()
-    status = peewee.CharField(max_length=20)
+    status = peewee.CharField(max_length=20)  # open / closed
     entry_time = peewee.DateTimeField()
     exit_time = peewee.DateTimeField(null=True)
     exit_price = peewee.FloatField(null=True)
     unrealized_pnl = peewee.FloatField()
     realized_pnl = peewee.FloatField()
-    signal_id = peewee.CharField(max_length=50, null=True)
+    signal_id = peewee.CharField(max_length=50, null=True)  # 关联信号 ID
+
+    class Meta:
+        database = database

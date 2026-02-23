@@ -1,0 +1,21 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python: Module (utils.third_api)",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "src.utils.third_api",
+            "justMyCode": true,
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "name": "Python: Module (tools.persist_data)",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "src.tools.persist_data",
+            "justMyCode": true,
+            "cwd": "${workspaceFolder}"
+        }
+    ]
+}

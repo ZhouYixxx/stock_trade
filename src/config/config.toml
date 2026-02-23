@@ -1,0 +1,29 @@
+[monitor]
+# Interval in minutes
+interval = 10
+
+# List of stock symbols to monitor
+# Example: ["AAPL", "MSFT", "GOOGL", ...]
+stocks = [
+    "AAPL",
+    "MSFT",
+    "GOOGL",
+    "AMZN",
+    "META",
+    "TSLA",
+    "NVDA",
+    "JPM",
+    "V",
+    "JNJ"
+]
+
+# Batch size for fetching stock data
+batch_size = 20
+
+[storage]
+# Database file path (relative to project root)
+db_path = "./data/stocks.db"
+# Enable historical data persistence
+enable_history = true
+# Number of days of historical data to keep
+history_days = 365

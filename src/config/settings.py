@@ -2,13 +2,29 @@
 配置管理模块
 """
 import pathlib
+import tomllib
 from typing import Dict, Any, List, Optional
 from dataclasses import dataclass
 
 
 def load_config(config_path: pathlib.Path) -> Dict[str, Any]:
-    """加载配置文件"""
-    pass
+    """
+    加载配置文件
+
+    Args:
+        config_path: 配置文件路径
+
+    Returns:
+        配置字典
+    """
+    try:
+        with open(config_path, 'rb') as f:
+            config = tomllib.load(f)
+        return config
+    except FileNotFoundError:
+        raise FileNotFoundError(f"配置文件不存在: {config_path}")
+    except Exception as e:
+        raise RuntimeError(f"加载配置文件失败: {e}")
 
 
 def validate_config(config: Dict[str, Any]) -> bool:
@@ -32,8 +48,18 @@ def get_feishu_config(config: Dict[str, Any]) -> 'FeishuConfig':
 
 
 def get_storage_config(config: Dict[str, Any]) -> 'StorageConfig':
-    """获取存储配置"""
-    pass
+    """
+    获取DB相关配置
+    """
+    storage_config = config.get('storage', {})
+    # 设置默认值
+    stc = StorageConfig(
+        db_path=storage_config.get('db_path', 'data/stocks.db'),
+        enable_history=storage_config.get('enable_history', True),
+        history_days=storage_config.get('history_days', 365)
+    )
+    stc.db_path = pathlib.Path(__file__).resolve().parent.parent / stc.db_path
+    return stc
 
 
 @dataclass
