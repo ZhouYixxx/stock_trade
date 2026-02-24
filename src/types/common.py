@@ -11,6 +11,7 @@ OrderType = Literal["limit", "market", "stop_limit"]
 OrderStatus = Literal["pending", "filled", "cancelled", "rejected"]
 PositionStatus = Literal["open", "closed"]
 MarketCapCategory = Literal["large_cap", "mid_cap", "small_cap"]
+Exchange = Literal["HK", "US"]
 
 # 数据结构
 class OHLCData(TypedDict):

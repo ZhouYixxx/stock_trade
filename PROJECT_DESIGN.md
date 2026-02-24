@@ -180,7 +180,7 @@ class StockInfo(TypedDict):
 
 ---
 
-### 4. data/storage.py (数据存储)
+### 4. data/db_operations.py (数据库操作)
 
 ```python
 def init_database(db_path: str) -> peewee.Database:
@@ -234,7 +234,7 @@ def get_positions(
 
 ---
 
-### 5. data/models.py (数据模型)
+### 5. data/db_models.py (数据库 ORM 模型)
 
 ```python
 class StockData(peewee.Model):
@@ -1026,7 +1026,7 @@ main.py
 
 monitor/signal_monitor.py
   ├── data/market_data.py
-  ├── data/storage.py
+  ├── data/db_operations.py
   ├── strategy/base.py
   ├── strategy/screening.py
   ├── strategy/indicators.py
@@ -1052,11 +1052,11 @@ notification/
 
 data/
   ├── data/market_data.py (依赖: 无)
-  ├── data/storage.py (依赖: data/models.py)
-  └── data/models.py (依赖: 无)
+  ├── data/db_operations.py (依赖: data/db_models.py)
+  └── data/db_models.py (依赖: 无)
 
 tools/
-  ├── tools/persist_data.py (依赖: config/settings.py, data/market_data.py, data/storage.py, utils/logging.py)
+  ├── tools/persist_data.py (依赖: config/settings.py, data/market_data.py, data/db_operations.py, data/db_models.py, utils/logging.py)
 
 utils/
   ├── utils/logging.py (依赖: 无)

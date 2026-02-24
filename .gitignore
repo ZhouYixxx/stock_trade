@@ -3,3 +3,8 @@ stock_venv/
 CLAUDE.md
 PROJECT_DESIGN.md
 src/__pycache__
+src/config/__pycache__
+src/data/__pycache__
+src/tools/__pycache__
+src/types/__pycache__
+src/utils/__pycache__
