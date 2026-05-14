@@ -4,168 +4,100 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-US stock trading application that fetches market data using yfinance and sends notifications via Feishu. Trading is performed at the daily level with manual execution.
+US stock trading application that fetches market data using yfinance and sends notifications via Feishu. Daily-level trading with manual execution. Written in Python 3.11+ (uses `tomllib`). Code comments and log messages are in Chinese.
 
-## Dependencies
+## Common Commands
 
-Key Python packages:
-- `yfinance` - Fetches US stock market data
-- `pandas` - Data manipulation
-- `peewee` - ORM for SQLite database
-- `aiohttp` - Async HTTP client for notifications
-- `websockets` - WebSocket support
-
-Install dependencies:
 ```bash
-pip install -r requirements.txt
-```
-
-Or using the virtual environment:
-```bash
-# Activate venv (Windows)
+# Activate virtual environment (Windows)
 stock_venv\Scripts\activate
 
-# Install requirements
+# Install dependencies
 pip install -r requirements.txt
+
+# Run data persistence tool (main operational command)
+python -m src.tools.persist_data --startdate 20260501 --enddate 20260506
+
+# Run quote monitor example
+python src/example_usage.py
+
+# Debug configurations exist in .vscode/launch.json for:
+#   - src.utils.third_api
+#   - src.tools.persist_data
 ```
+
+No test framework is configured. No build system (`pyproject.toml`, `Makefile`, etc.).
 
 ## Architecture
 
-The codebase follows a modular design with two distinct execution paths:
+Two independent execution paths that share the database but never interact at runtime:
 
-1. **Monitor Loop** - Real-time quote monitoring every 10 minutes for signal analysis
-2. **Data Persistence** - Independent tool for daily data storage (scheduled via cron/Task Scheduler)
+**1. Monitor Loop** (`src/monitor/quote_monitor.py`) — daemon background thread polls yfinance every N minutes for real-time OHLC data. Uses callback pattern (`add_callback('on_data_received', func)`) for extensibility. Stocks are fetched in configurable batch sizes.
 
-### Key Modules
-
-- `src/main.py` - Entry point (placeholder - not yet implemented)
-- `src/config/settings.py` - Configuration management with dataclasses (MonitorConfig, StrategyConfig, FeishuConfig, StorageConfig)
-- `src/monitor/quote_monitor.py` - Real-time quote monitoring using background threads
-- `src/monitor/signal_monitor.py` - Signal monitoring (placeholder)
-- `src/tools/persist_data.py` - Standalone data persistence tool for daily EOD data
-- `src/data/db_models.py` - Peewee ORM models (StockData, SignalRecord, OrderRecord, PositionRecord)
-- `src/data/db_operations.py` - Database operations (placeholder)
-- `src/data/market_data.py` - Market data fetching (placeholder)
-- `src/strategy/` - Strategy modules (base.py, indicators.py, signals.py, screening.py - placeholders)
-- `src/notification/` - Notification modules (feishu.py, formatter.py - placeholders)
-- `src/trading/` - Trading modules (order.py, position.py - placeholders)
-- `src/utils/` - Utilities (logging.py, time.py, decorators.py, third_api.py)
-- `src/types/common.py` - Type definitions (OHLCData, SignalType, OrderSide, etc.)
-
-### Data Flow
+**2. Data Persistence** (`src/tools/persist_data.py`) — standalone CLI tool for daily EOD data. Scheduled via cron/Task Scheduler after market close. Fetches NASDAQ-100 + S&P 500 constituents via `src/utils/third_api.py`, downloads in batches of 20 with 5-second delays, saves to SQLite.
 
 ```
-config.toml → QuoteMonitor (10-min polling) → yfinance → OHLC Data
-                                            ↓
-                                    Strategy Analysis
-                                            ↓
-                                    Feishu Notifications
+config.toml → QuoteMonitor (polling) → yfinance → OHLC Data → callbacks
+                                                                      ↓
+                                                              Strategy Analysis (not yet built)
+                                                                      ↓
+                                                              Feishu Notifications (not yet built)
 
-Independent: persist_data.py (daily EOD, scheduled) → SQLite Database
+Independent: persist_data.py (daily EOD) → yfinance → SQLite Database
+                                                   ↑
+                                      third_api.py (NASDAQ-100, S&P 500 constituents)
 ```
 
-### Important Design Decisions
+## Key Design Patterns
 
-1. **Monitoring vs Persistence Separation**: Real-time monitoring fetches data for signal analysis only. Historical data persistence is handled by the independent `persist_data.py` tool.
-2. **Database**: SQLite with Peewee ORM - stores daily OHLC data and trading records.
-3. **Batch Processing**: Quote monitor splits stock lists into batches (configurable batch_size) for API efficiency.
-4. **Thread Safety**: QuoteMonitor runs in a daemon background thread with graceful shutdown via Event.
-
-## Running the Application
-
-### Main Application (placeholder)
-```bash
-python src/main.py
-```
-
-### Quote Monitor (Stand-alone)
-```python
-from src.monitor.quote_monitor import start_quote_monitor
-
-monitor = start_quote_monitor(
-    stocks=["AAPL", "MSFT", "GOOGL"],
-    interval=10,
-    on_data_received=lambda data: print(data)
-)
-```
-
-### Data Persistence Tool
-
-The persistence tool is designed to run independently via cron or Task Scheduler after market close.
-
-```bash
-# Persist today's data (all stocks)
-python -m src.tools.persist_data
-
-# Persist specific stock
-python -m src.tools.persist_data --symbol AAPL
-
-# Persist specific date
-python -m src.tools.persist_data --date 2026-02-16
-
-# Force overwrite existing data
-python -m src.tools.persist_data --force
-
-# Dry run (no database writes)
-python -m src.tools.persist_data --dry-run
-```
-
-## Configuration
-
-Configuration is loaded from `src/config.toml` using Python's built-in `tomllib` module (Python 3.11+).
-
-Current config sections:
-- `[monitor]` - interval (minutes), stocks list, batch_size
-- Future: `[strategy]`, `[feishu]`, `[storage]` (not yet implemented)
-
-## Database
-
-### Database File
-By default: `./data/trading.db` (configurable)
-
-### Models (Peewee)
-- `StockData` - Daily OHLC data
-- `SignalRecord` - Trading signals
-- `OrderRecord` - Orders
-- `PositionRecord` - Positions
-
-### Database Initialization
-The `persist_data.py` tool handles database initialization via Peewee's `database.create_tables()`.
-
-## Module Import Guidelines
-
-See `src/MODULE_IMPORT_GUIDE.md` for detailed import patterns and common usage examples.
-
-## Scheduled Tasks
-
-### Linux/macOS (cron)
-```bash
-# Run daily at 4:30 AM (after US market close)
-30 4 * * * cd /path/to/stock_trade && python -m src.tools.persist_data >> logs/persist.log 2>&1
-```
-
-### Windows (Task Scheduler)
-1. Create a basic task triggered daily at 4:30 AM
-2. Action: Start program `python.exe`
-3. Arguments: `-m src.tools.persist_data`
-4. Start in: `D:\CodeProjectsNew\stock_trade`
-5. Check "Run whether user is logged on or not"
+- **Relative imports everywhere** — all modules use `from ..types.common import OHLCData` style. Must run as package (`python -m src.tools.persist_data`), never as standalone scripts.
+- **Deferred database** — `db_models.py` creates `SqliteDatabase(None)`, then `db_operations.init_database(db_path)` calls `database.init()` at runtime. All four models share one `database` instance via `BaseModel.Meta.database`.
+- **Type system** — `src/types/common.py` defines `TypedDict` structs (`OHLCData`, `TradingSignal`, `Order`, `Position`) and `Literal` enum-like types. These are the canonical data structures used across all modules.
+- **Configuration** — TOML loaded via `tomllib` into dataclasses (`MonitorConfig`, `StrategyConfig`, `FeishuConfig`, `StorageConfig`). Path in `src/config/config.toml`. `get_storage_config()` resolves `db_path` relative to the project root.
+- **Logging** — custom `setup_logger()` in `src/utils/logging.py` with console + optional file handler (supports `TimedRotatingFileHandler`). Do not use Python's root logger.
 
 ## Implementation Status
 
-### Implemented (Functional)
-- Quote monitor with background threading
-- Batch stock fetching with yfinance
-- Data persistence tool (single stock)
-- Database models (Peewee)
-- Configuration dataclasses
-- Utility modules (logging, time, decorators)
+### Fully Implemented
+| Module | File | What it does |
+|--------|------|-------------|
+| Config loading | `src/config/settings.py` | `load_config()`, `get_storage_config()` |
+| Quote monitoring | `src/monitor/quote_monitor.py` | Background thread, yfinance batch fetch, callback system |
+| Database models | `src/data/db_models.py` | Peewee ORM: StockData, SignalRecord, OrderRecord, PositionRecord |
+| Database operations | `src/data/db_operations.py` | Full CRUD for all 4 tables, bulk DataFrame insert |
+| Data persistence | `src/tools/persist_data.py` | CLI tool: batch EOD download, trading day detection |
+| Type definitions | `src/types/common.py` | TypedDicts and Literal types |
+| Logging | `src/utils/logging.py` | Logger setup, structured log helpers |
+| Third-party APIs | `src/utils/third_api.py` | NASDAQ-100/S&P 500 constituent scrapers, trading day check |
 
-### Placeholder/Incomplete
-- Main application entry point
-- Signal generation logic
-- Strategy implementations
-- Notification (Feishu)
-- Trading order/position management
-- Database operations wrapper functions
-- Market data fetching utilities
+### Placeholder (all function bodies are `pass`)
+`src/main.py`, `src/monitor/signal_monitor.py`, `src/data/market_data.py`, `src/strategy/*`, `src/notification/*`, `src/trading/*`, `src/utils/time.py`, `src/utils/decorators.py`
+
+Note: `src/tools/persist_data_example.py` is a non-functional design reference that imports nonexistent function names — do not use it.
+
+## Database
+
+SQLite at `./data/stocks.db` (configurable in `config.toml` `[storage]` section).
+
+Tables: `StockData` (unique index on symbol+date), `SignalRecord`, `OrderRecord`, `PositionRecord`.
+
+Database and `./data/` directory are auto-created by `persist_data.py` on first run.
+
+## Persist Data CLI
+
+```bash
+# Batch download for date range (no args = all stocks, recent trading day)
+python -m src.tools.persist_data
+
+# Specific stock
+python -m src.tools.persist_data --symbol AAPL
+
+# Date range (YYYYMMDD format)
+python -m src.tools.persist_data --startdate 20260501 --enddate 20260506
+```
+
+## Known Issues
+
+- `pandas_market_calendars` is used in `src/utils/third_api.py` but not listed in `requirements.txt` — install manually if needed.
+- `third_api.is_trading_day()` returns a `DatetimeIndex`, not a `bool`. It works as truthy/falsy in conditions but is semantically incorrect.
+- `persist_data_example.py` imports `save_stock_history_data` which does not exist — the actual function is `save_stocks_data` in `db_operations.py`.

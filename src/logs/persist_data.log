@@ -1,0 +1,105 @@
+2026-02-23 18:38:59 - persist_data - ERROR - 处理失败: Traceback (most recent call last):
+  File "D:\CodeProjectsNew\stock_trade\src\config\settings.py", line 21, in load_config
+    with open(config_path, 'rb') as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '..\\config\\config.toml'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "D:\CodeProjectsNew\stock_trade\src\tools\persist_data.py", line 276, in main
+    load_config(pathlib.Path('../config/config.toml'))
+  File "D:\CodeProjectsNew\stock_trade\src\tools\persist_data.py", line 55, in load_config
+    config = settings.load_config(config_path)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\CodeProjectsNew\stock_trade\src\config\settings.py", line 25, in load_config
+    raise FileNotFoundError(f"配置文件不存在: {config_path}")
+FileNotFoundError: 配置文件不存在: ..\config\config.toml
+
+2026-02-23 18:40:36 - persist_data - ERROR - 处理失败: Traceback (most recent call last):
+  File "d:\CodeProjectsNew\stock_trade\stock_venv\Lib\site-packages\peewee.py", line 3263, in connect
+    self._state.set_connection(self._connect())
+                               ^^^^^^^^^^^^^^^
+  File "d:\CodeProjectsNew\stock_trade\stock_venv\Lib\site-packages\peewee.py", line 3604, in _connect
+    conn = sqlite3.connect(self.database, timeout=self._timeout,
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: unable to open database file
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "d:\CodeProjectsNew\stock_trade\stock_venv\Lib\site-packages\peewee.py", line 3321, in execute_sql
+    cursor = self.cursor()
+             ^^^^^^^^^^^^^
+  File "d:\CodeProjectsNew\stock_trade\stock_venv\Lib\site-packages\peewee.py", line 3311, in cursor
+    self.connect()
+  File "d:\CodeProjectsNew\stock_trade\stock_venv\Lib\site-packages\peewee.py", line 3262, in connect
+    with __exception_wrapper__:
+  File "d:\CodeProjectsNew\stock_trade\stock_venv\Lib\site-packages\peewee.py", line 3088, in __exit__
+    reraise(new_type, new_type(exc_value, *exc_args), traceback)
+  File "d:\CodeProjectsNew\stock_trade\stock_venv\Lib\site-packages\peewee.py", line 196, in reraise
+    raise value.with_traceback(tb)
+  File "d:\CodeProjectsNew\stock_trade\stock_venv\Lib\site-packages\peewee.py", line 3263, in connect
+    self._state.set_connection(self._connect())
+                               ^^^^^^^^^^^^^^^
+  File "d:\CodeProjectsNew\stock_trade\stock_venv\Lib\site-packages\peewee.py", line 3604, in _connect
+    conn = sqlite3.connect(self.database, timeout=self._timeout,
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+peewee.OperationalError: unable to open database file
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "D:\CodeProjectsNew\stock_trade\src\tools\persist_data.py", line 276, in main
+    load_config(pathlib.Path(__file__).parent.parent / "config" / "config.toml")
+  File "D:\CodeProjectsNew\stock_trade\src\tools\persist_data.py", line 60, in load_config
+    db_operations.init_database(storage_config.db_path)
+  File "D:\CodeProjectsNew\stock_trade\src\data\db_operations.py", line 26, in init_database
+    database.create_tables([StockData, SignalRecord, OrderRecord, PositionRecord])
+  File "d:\CodeProjectsNew\stock_trade\stock_venv\Lib\site-packages\peewee.py", line 3508, in create_tables
+    model.create_table(**options)
+  File "d:\CodeProjectsNew\stock_trade\stock_venv\Lib\site-packages\peewee.py", line 7085, in create_table
+    cls._schema.create_all(safe, **options)
+  File "d:\CodeProjectsNew\stock_trade\stock_venv\Lib\site-packages\peewee.py", line 6178, in create_all
+    self.create_table(safe, **table_options)
+  File "d:\CodeProjectsNew\stock_trade\stock_venv\Lib\site-packages\peewee.py", line 6034, in create_table
+    self.database.execute(self._create_table(safe=safe, **options))
+  File "d:\CodeProjectsNew\stock_trade\stock_venv\Lib\site-packages\peewee.py", line 3330, in execute
+    return self.execute_sql(sql, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "d:\CodeProjectsNew\stock_trade\stock_venv\Lib\site-packages\peewee.py", line 3320, in execute_sql
+    with __exception_wrapper__:
+  File "d:\CodeProjectsNew\stock_trade\stock_venv\Lib\site-packages\peewee.py", line 3088, in __exit__
+    reraise(new_type, new_type(exc_value, *exc_args), traceback)
+  File "d:\CodeProjectsNew\stock_trade\stock_venv\Lib\site-packages\peewee.py", line 196, in reraise
+    raise value.with_traceback(tb)
+  File "d:\CodeProjectsNew\stock_trade\stock_venv\Lib\site-packages\peewee.py", line 3321, in execute_sql
+    cursor = self.cursor()
+             ^^^^^^^^^^^^^
+  File "d:\CodeProjectsNew\stock_trade\stock_venv\Lib\site-packages\peewee.py", line 3311, in cursor
+    self.connect()
+  File "d:\CodeProjectsNew\stock_trade\stock_venv\Lib\site-packages\peewee.py", line 3262, in connect
+    with __exception_wrapper__:
+  File "d:\CodeProjectsNew\stock_trade\stock_venv\Lib\site-packages\peewee.py", line 3088, in __exit__
+    reraise(new_type, new_type(exc_value, *exc_args), traceback)
+  File "d:\CodeProjectsNew\stock_trade\stock_venv\Lib\site-packages\peewee.py", line 196, in reraise
+    raise value.with_traceback(tb)
+  File "d:\CodeProjectsNew\stock_trade\stock_venv\Lib\site-packages\peewee.py", line 3263, in connect
+    self._state.set_connection(self._connect())
+                               ^^^^^^^^^^^^^^^
+  File "d:\CodeProjectsNew\stock_trade\stock_venv\Lib\site-packages\peewee.py", line 3604, in _connect
+    conn = sqlite3.connect(self.database, timeout=self._timeout,
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+peewee.OperationalError: unable to open database file
+
+2026-02-23 18:55:20 - persist_data - ERROR - 处理失败: Traceback (most recent call last):
+  File "D:\CodeProjectsNew\stock_trade\src\tools\persist_data.py", line 276, in main
+    load_config(pathlib.Path(__file__).parent.parent / "config" / "config.toml")
+  File "D:\CodeProjectsNew\stock_trade\src\tools\persist_data.py", line 57, in load_config
+    storage_config = settings.get_storage_config(config)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\CodeProjectsNew\stock_trade\src\config\settings.py", line 67, in get_storage_config
+    stc.db_path = pathlib.Path(__file__).resolve().parent.parnet / "data/stocks.db"
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'WindowsPath' object has no attribute 'parnet'. Did you mean: 'parent'?
+
